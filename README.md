@@ -1,5 +1,3 @@
-
-
 # About
 
 The purpose of this project is to make it easy to run various load
@@ -13,7 +11,7 @@ We can achieve that by:
    specific configuration.
 
 The first step is handled by the [Packer](https://www.packer.io), the
-second - by the [Terraform](https://www.terraform.io). If you're using 
+second - by the [Terraform](https://www.terraform.io). If you're using
 a Mac you can install them using homebrew:
 
 ```
@@ -25,7 +23,7 @@ The scripts are based on [bitgn/fdb-cloud-test](https://github.com/bitgn/fdb-clo
 # Creating AMIs
 
 First you need to create packer images for FDB and tester
-machines. 
+machines.
 
 Note, that in this setup we actually create a temporary EC2 instance
 in the cloud, install all the dependencies there, make a snapshot
@@ -103,7 +101,7 @@ fdb_address = [
     fdb-03.amazonaws.com
 ]
 fdb_cluster = Drtu0T4S:i8uQIB9r@10.0.1.101:4500
-fdb_init_string = configure new memory single proxies=9 resolvers=9 logs=4
+fdb_init_string = configure new memory single proxies=9 resolvers=9 logs=8
 tester_address = [
     tester-01.amazonaws.com
 ]
@@ -113,7 +111,7 @@ Note that the machine names would be different each time (and much
 longer). This is just a sample output.
 
 Congratulations, you now have a FoundationDB cluster running in
-AWS. 
+AWS.
 
 ## Verify your deployment
 
@@ -146,7 +144,7 @@ Configuration:
   Redundancy mode        - double
   Storage engine         - ssd-2
   Coordinators           - 3
-  
+
 ...
 ```
 
@@ -154,7 +152,7 @@ Congratulations, FDB cluster is up and running!
 
 # Running tests
 
-Tests run from fdb instances with the `test` role. The test definition can 
+Tests run from fdb instances with the `test` role. The test definition can
 be found in `terraform/test.conf`. To run tests on a single core type:
 
 ```
@@ -202,16 +200,16 @@ Metric (0, 29): Bytes written/sec, 775082.600000, 7.75e+05
 1 tests passed; 0 tests failed, waiting for DD to end...
 ```
 
-It will upload the test definition to a server and then run it. Running on a 
-single core is usually not enough to saturate the cluster, so most of 
-the time you should instead run 
+It will upload the test definition to a server and then run it. Running on a
+single core is usually not enough to saturate the cluster, so most of
+the time you should instead run
 
 ```
 $ make multitest
 ```
 
-This will execute the test from all available test processes and output 
-results from each of them. To get the totals you usually want to sum 
+This will execute the test from all available test processes and output
+results from each of them. To get the totals you usually want to sum
 or average the results from each process.
 
 # Modifying the cluster
@@ -220,12 +218,12 @@ You can tune the cluster configuration by editing `variables.tf` file
 to your liking. Ideally, you would do that before creating a new
 cluster.
 
-The configuration for each node is stored in `conf/*.ini` files. Each file 
-corresponds to a node with the same number (you will have to create 
-more config files if you want to make your cluster larger). Testing nodes have 
-identical configs stored in `conf/tester.ini`. The configs are intentionally made as 
-a separate files instead of a script that generates them from an array of roles 
-to allow easy per process tuning, for example adding memory to storage processess. 
+The configuration for each node is stored in `conf/*.ini` files. Each file
+corresponds to a node with the same number (you will have to create
+more config files if you want to make your cluster larger). Testing nodes have
+identical configs stored in `conf/tester.ini`. The configs are intentionally made as
+a separate files instead of a script that generates them from an array of roles
+to allow easy per process tuning, for example adding memory to storage processess.
 
 You can quickly update configs on all your cluster nodes without recreating or restarting them by using
 
@@ -233,9 +231,9 @@ You can quickly update configs on all your cluster nodes without recreating or r
 $ make reconfigure
 ```
 
-This is done by copying configs to the corresponding nodes via `scp`, fdb should automatically 
-detect and apply the config file changes. To avoid being asked about new fingerprints, 
-you may want to fetch them all first with the following command, this needs to be done 
+This is done by copying configs to the corresponding nodes via `scp`, fdb should automatically
+detect and apply the config file changes. To avoid being asked about new fingerprints,
+you may want to fetch them all first with the following command, this needs to be done
 only once after the cluster deployment
 
 ```
@@ -251,7 +249,7 @@ $ make clean
 # Monitoring performance
 
 Most useful things can be monitored by running included [fdbtop](https://github.com/poma/fdbtop)
-utility on one of your test nodes (run `fdbtop --help` for more info). 
+utility on one of your test nodes (run `fdbtop --help` for more info).
 
 ```
 $ fdbtop
@@ -281,17 +279,17 @@ $ fdbtop
                4507    0     2     33    0      master
 ```
 
-You can also monitor general stats by running `status` command in 
+You can also monitor general stats by running `status` command in
 fdbcli or calling it periodically with `watch`:
 
 ```
 watch "fdbcli --exec status"
 ```
 
-Alternatively, you may want to feed the output of 
+Alternatively, you may want to feed the output of
 `fdbcli --exec 'status json'` command to your monitoring tool of choice.
 
-Most of the time you need to watch if any of your `log` or `storage` 
+Most of the time you need to watch if any of your `log` or `storage`
 processes saturate the disk iops, and whether any role saturates its CPU core.
 
 # Destroying the cluster
@@ -313,7 +311,7 @@ Do you really want to destroy?
   There is no undo. Only 'yes' will be accepted to confirm.
 
   Enter a value: yes
-  
+
 ....
 
 Destroy complete! Resources: 12 destroyed.

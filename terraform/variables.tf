@@ -3,7 +3,7 @@
 # instance store options: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html
 # m5d.2xlarge - will use local NVMe SSD
 variable "aws_fdb_size" {
-  default = "m5d.2xlarge"
+  default = "s-1vcpu-1gb"
   description = "machine type to run FoundationDB servers"
 }
 variable "fdb_procs_per_machine" {
@@ -11,17 +11,17 @@ variable "fdb_procs_per_machine" {
   description = "number of FDB processes per machine"
 }
 variable "aws_fdb_count" {
-  default = 8
+  default = 1
   description = "Number of machines in a cluster"
 }
 variable "aws_tester_count" {
   # make sure there are enough testers so that they 
   # are not saturated (cpu < 100%) to get accurate results
-  default = 4
+  default = 1
   description = "Number of tester machines in a cluster"
 }
 variable "fdb_init_string" {
-  default = "configure new ssd double proxies=4 resolvers=2 logs=2"
+  default = "configure new ssd double proxies=4 resolvers=2 logs=8"
   description = "FDB initialization string"
 }
 
@@ -39,8 +39,8 @@ variable "private_key_path" {
 variable "key_name" {
    default = "terraform"
 }
-variable "aws_access_key" {}
-variable "aws_secret_key" {}
+# variable "aws_access_key" {}
+# variable "aws_secret_key" {}
 variable "aws_region" {
   default = "eu-west-1"
   description = "AWS region to launch servers."
@@ -48,3 +48,5 @@ variable "aws_region" {
 variable "aws_availability_zone" {
   default = "eu-west-1b"
 }
+
+variable "do_token" {}

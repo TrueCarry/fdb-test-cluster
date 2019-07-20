@@ -30,29 +30,32 @@ chmod o+w /etc/foundationdb/fdb.cluster
 
 # NVME disks aren't formatted. Mounting them in fstab - no good
 # mounting NVME disk: https://stackoverflow.com/questions/45167717/mounting-a-nvme-disk-on-aws-ec2
-case $VM_TYPE in
-"m3.large" | "m3.medium")
-    echo use local instance store
-    mount /dev/xvdb /var/lib/foundationdb
-    echo /dev/xvdb  /var/lib/foundationdb ext3 defaults,nofail 0 2 >> /etc/fstab
-    mkdir -p /var/lib/foundationdb/data
-    chown -R foundationdb:foundationdb /var/lib/foundationdb
-    ;;
-"i3.large" | "m5d.2xlarge")
-    echo SSD optimized
-    mkfs.ext4 -E nodiscard /dev/nvme1n1
-    # ext4 filesystems should be mounted with mount options default,noatime,discard
-    mount /dev/nvme1n1 /var/lib/foundationdb
-    mkdir -p /var/lib/foundationdb/data
-    chown -R foundationdb:foundationdb /var/lib/foundationdb
-    ;;
-esac
+# case $VM_TYPE in
+# "m3.large" | "m3.medium")
+#     echo use local instance store
+#     mount /dev/xvdb /var/lib/foundationdb
+#     echo /dev/xvdb  /var/lib/foundationdb ext3 defaults,nofail 0 2 >> /etc/fstab
+#     mkdir -p /var/lib/foundationdb/data
+#     chown -R foundationdb:foundationdb /var/lib/foundationdb
+#     ;;
+# "i3.large" | "m5d.2xlarge")
+#     echo SSD optimized
+#     mkfs.ext4 -E nodiscard /dev/nvme1n1
+#     # ext4 filesystems should be mounted with mount options default,noatime,discard
+#     mount /dev/nvme1n1 /var/lib/foundationdb
+#     mkdir -p /var/lib/foundationdb/data
+#     chown -R foundationdb:foundationdb /var/lib/foundationdb
+#     ;;
+# esac
+
+mkdir -p /var/lib/foundationdb/data
+chown -R foundationdb:foundationdb /var/lib/foundationdb
 
 service foundationdb start
 
 if [ "$SELF_IP" == "$SEED_IP" ]; then
     echo "Seed setup"
     sleep 5 # make sure the service has started
-    fdbcli --exec "$FDB_INIT_STRING" --timeout 60
-    fdbcli --exec "coordinators auto; status" --timeout 60
+    fdbcli --exec "$FDB_INIT_STRING" --timeout 300
+    fdbcli --exec "coordinators auto; status" --timeout 300
 fi

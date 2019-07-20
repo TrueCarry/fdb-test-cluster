@@ -45,7 +45,7 @@ dpkg -i foundationdb-server_5.2.5-1_amd64.deb
 service foundationdb stop
 
 # add default user to foundationdb group
-sudo usermod -a -G foundationdb ubuntu
+sudo usermod -a -G foundationdb root
 
 # ensure correct permissions
 chown -R foundationdb:foundationdb /etc/foundationdb
